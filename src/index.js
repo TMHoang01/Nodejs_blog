@@ -5,6 +5,11 @@ const handlebars = require('express-handlebars');
 const app = express();
 const port = 3005;
 
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // HTTP logger
@@ -25,6 +30,14 @@ app.get('/', (req, res) => {
 
 app.get('/news', (req, res) => {
   res.render('news');
+})
+
+app.get('/search', (req, res) => {
+  res.render('search');
+})
+
+app.post('/search', (req, res) => {
+  res.send('search'+ JSON.stringify( req.body));
 })
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
