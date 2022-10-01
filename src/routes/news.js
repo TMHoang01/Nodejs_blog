@@ -5,5 +5,4 @@ const newsController = require('../app/controllers/NewsController.js');
 router.get('/:slug', newsController.show);
 router.get('/', newsController.index);
 
-
 module.exports = router;

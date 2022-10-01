@@ -1,9 +1,12 @@
 .test {
-  font-size: 1rem;
-  background-color: red; }
+    font-size: 1rem;
+    background-color: red;
+}
 
 h1 {
-  color: red; }
+    color: red;
+}
 
 h2 {
-  color: green; }
+    color: green;
+}
