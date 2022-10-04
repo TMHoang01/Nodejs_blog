@@ -1,13 +1,31 @@
-<div class="mt-4">
+<form class="mt-4" name="container-form" method="POST" action="/courses/handle-form-courses">
     <div>
       <a href="/me/stored/courses">Danh sách khóa học</a>
       <h3>Khóa học đã xóa</h3>
+
+      <div class="mt-4 d-flex align-items-center">
+
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" id="checkbox-all">
+        <label class="custom-control-label" for="checkbox-all">Chon tat ca</label>
+      </div>
+
+      <select class="from-control from-control-sm" name="action" required>
+        <option value="">-------</option>
+        <option value="restore">Khoi phuc</option>
+        <option value="forceDestroy">Xoa vinh vien</option>
+      </select>
+
+      <button class="btn btn-primary btn-sm disabled btn-submit-all">Thuc hien</button>
+    </div>
+
     </div>
 
     <table class="table mt-4">
         <thead>
             <tr>
-                <th scope="col">#</th>
+                <th scope="col" >#</th>
+                <th scope="col" >#</th>
                 <th scope="col">Tên khóa học</th>
                 <th scope="col">Trình độ</th>
                 <th scope="col" colspan="2">Thời gian tạo</th>
@@ -16,6 +34,11 @@
         <tbody>
             {{#each courses}}
             <tr>
+                <td>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="courseIds[]" value="{{this._id}}">
+                  </div>
+                </td>            
                 <th scope="row">{{sum @index 1}}</th>
                 <td>{{this.name}}</td>
                 <td>{{this.level}}</td>
@@ -35,7 +58,8 @@
             {{/each}}
         </tbody>
     </table>
-</div>
+
+</form>
 
 {{!-- Confirm delete course --}}
 <div id="delete-course-modal" class="modal" tabindex="-1" role="dialog">
@@ -68,6 +92,12 @@
         var restoreForm = document.forms['restore-course-form'];
         var btnDeleteCourse = document.getElementById('btn-delete-course');
         var restoreBtn = $('.btn-restore');
+        var checkboxAllBtn = $('#checkbox-all');
+        var courseItemCheckbox = $('input[name="courseIds[]"]');
+        var submitAllBtn = $('.btn-submit-all');
+        var containerForm = $('form[name="container-form"]');
+        var actionForm = $('select[name="action"]');
+
         // When dialog confirm clicked
         $('#delete-course-modal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
@@ -87,5 +117,47 @@
           restoreForm.action = '/courses/' + courseId + '/restore?_method=PATCH';
           restoreForm.submit();
         });
+
+        // checkbox all clicked
+        checkboxAllBtn.change(function(){
+            var isCheckAll = checkboxAllBtn.prop('checked');
+            courseItemCheckbox.prop('checked', isCheckAll);
+            renderCheckAllStatus();
+        });
+
+        // Course item checkbox clicked
+        courseItemCheckbox.change(function(){
+            var isCheckAll = courseItemCheckbox.length === $('input[name="courseIds[]"]:checked').length;
+            checkboxAllBtn.prop('checked', isCheckAll);
+            renderCheckAllStatus();
+
+        });
+
+        submitAllBtn.click(function(e){
+            e.preventDefault();
+            var isSummitAble = submitAllBtn.hasClass('disabled');
+            // check input[name="action"] is not empty
+            var action = $('select[name="action"]').val();
+            if(isSummitAble || !action){
+                return;
+            }else{
+            }
+
+            var action = $('select').val();
+            containerForm.action = '/courses/handle-form-courses';
+            containerForm.method = 'POST';
+            containerForm.submit();
+        });
+
+        // re render checkbox all
+        function renderCheckAllStatus(){
+            var checkedCount= $('input[name="courseIds[]"]:checked').length;
+            if(checkedCount > 0){
+                submitAllBtn.removeClass('disabled');
+            }else{
+                submitAllBtn.addClass('disabled');
+            }
+        };
+
     });
 </script>

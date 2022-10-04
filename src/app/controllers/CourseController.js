@@ -1,3 +1,4 @@
+const e = require('express');
 const Course = require('../models/Course.js');
 const { mongooseToObject } = require('../util/mongoose.js');
 const { mutipleMongooseToObject } = require('../util/mongoose.js');
@@ -83,7 +84,33 @@ class CourseController {
             .catch(next);
     }
 
-    //
+    //[POST] /course/handele-form-courses
+    handeleFormCourses(req, res, next) {
+        let action = req.body.action;
+
+        switch (action) {
+            case 'delete':
+                Course.delete({ _id: { $in: req.body.courseIds } })
+                    .then(() => res.redirect('back'))
+                    .catch(next);
+                break;
+
+            case 'restore':
+                Course.restore({ _id: { $in: req.body.courseIds } })
+                    .then(() => res.redirect('back'))
+                    .catch(next);
+                break;
+
+            case 'forceDestroy':
+                Course.deleteOne({ _id: { $in: req.body.courseIds } })
+                    .then(() => res.redirect('back'))
+                    .catch(next);
+
+            default:
+                res.json({ message: 'Action is invalid' });
+        }
+
+    }
 }
 
 module.exports = new CourseController();
